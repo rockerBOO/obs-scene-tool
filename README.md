@@ -16,6 +16,7 @@ Usage:
   obs-scene-tool [command]
 
 Available Commands:
+  detect      Detect scene files in common user locations.
   help        Help about any command
   merge       Merge 2 scenes json files
   version     Print the version of obs-scene-tool
