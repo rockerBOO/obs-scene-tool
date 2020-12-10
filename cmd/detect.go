@@ -17,8 +17,13 @@ var detectCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		directories := []string{"~/.config/obs-studio/basic/simple"}
 		for _, detect := range Detect(directories) {
-			fmt.Println("Detected this files: ")
+			if len(detect) == 0 {
+				continue
+			}
+
+			fmt.Println("Detected this file: ")
 			fmt.Println(detect)
+
 			x, _ := unwrap([]byte(detect))
 
 			fmt.Println(x)
