@@ -2,13 +2,35 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
-func init() {
+var detectCmd = &cobra.Command{
+	Use:   "detect",
+	Short: "Detect scene files in common user locations.",
+	Long: `Detect all scene files in the common user locations. 
+			~/.config/obs-studio/basic/simple`,
+	Run: func(cmd *cobra.Command, args []string) {
+		directories := []string{"~/.config/obs-studio/basic/simple"}
+		for _, detect := range Detect(directories) {
+			fmt.Println("Detected this files: ")
+			fmt.Println(detect)
+			x, _ := unwrap([]byte(detect))
+
+			fmt.Println(x)
+		}
+	},
 }
 
+func init() {
+	rootCmd.AddCommand(detectCmd)
+}
+
+// Detect if any Scene files on the machine
 func Detect(directories []string) []string {
 	found_files := make([]string, 1)
 
