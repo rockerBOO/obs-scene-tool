@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -13,9 +14,9 @@ var detectCmd = &cobra.Command{
 	Use:   "detect",
 	Short: "Detect scene files in common user locations.",
 	Long: `Detect all scene files in the common user locations. 
-			~/.config/obs-studio/basic/simple`,
+			~/.config/obs-studio/basic/scenes`,
 	Run: func(cmd *cobra.Command, args []string) {
-		directories := []string{"~/.config/obs-studio/basic/simple"}
+		directories := []string{"~/.config/obs-studio/basic/scenes"}
 		for _, detect := range Detect(directories) {
 			if len(detect) == 0 {
 				continue
@@ -52,7 +53,8 @@ func Detect(directories []string) []string {
 
 // Find any scenes files in the directory
 func find_in_directory(directory string) (bool, string) {
-	list, err := ioutil.ReadDir(directory)
+	dir := filepath.Dir(directory)
+	list, err := ioutil.ReadDir(dir)
 
 	if err != nil {
 		return false, ""

@@ -1,10 +1,12 @@
 # OBS Scene Tool
 
-
-
 ## Goals 
 - Making a group of scenes in OBS and then export them into git
 - Merge scenes together between 2 jsons without messing up the audio or other settings
+
+## Status (Unstable)
+
+Currently building out the features. Likely nothing works yet. 
 
 ## Usage
 
