@@ -1,5 +1,7 @@
 # OBS Scene Tool
 
+![Actions Status](https://github.com/rockerBOO/obs-scene-tool/workflows/test/badge.svg)](https://github.com/rockerBOO/obs-scene-tool/actions)
+
 ## Goals 
 - Making a group of scenes in OBS and then export them into git
 - Merge scenes together between 2 jsons without messing up the audio or other settings
