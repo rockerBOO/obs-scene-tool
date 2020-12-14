@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"strings"
 
+	"github.com/rockerBOO/obs-scene-tool/obs"
 	"github.com/spf13/cobra"
 )
 
@@ -17,8 +19,6 @@ var detectCmd = &cobra.Command{
 			~/.config/obs-studio/basic/scenes`,
 	Run: func(cmd *cobra.Command, args []string) {
 		directories := []string{filepath.Dir("/home/rockerboo/.config/obs-studio/basic/scenes/")}
-
-		fmt.Printf("directories: %+v\n", directories)
 
 		detected_files := Detect(directories)
 
@@ -46,93 +46,44 @@ func Detect(directories []string) []string {
 	found_files := make([]string, 1)
 
 	for _, dir := range directories {
-		fmt.Printf("find in directory %+v\n", dir)
 		is_found, file := find_in_directory(dir)
 
 		if !is_found {
-			fmt.Printf("no file found %+v\n", dir)
 			continue
 		}
 
-		sources, err := find_sources(file)
-
-		if err != nil {
-			fmt.Printf("no sources found %+v\n", err)
-		}
-
-		for _, source := range sources {
-			fmt.Printf("source found %+v\n", source.Name)
-		}
+		is_found = obs.HasScenes(file)
 
 		if is_found {
 			found_files = append(found_files, file)
 		}
 	}
 
-	fmt.Printf("%+v\n", found_files)
+	if len(found_files) == 0 {
+		log.Printf("No files found")
+	} else {
+		log.Printf("Found %+v files. %+v", len(found_files), found_files)
+	}
 
 	return found_files
-}
-
-type Scenes struct {
-	Sources []Source
-}
-
-type Source struct {
-	Id      string
-	Name    string
-	Enabled bool
-}
-
-func open_json(file string, unpack_json Scenes) (*Scenes, error) {
-	file_source, err := ioutil.ReadFile(file)
-
-	if err != nil {
-		fmt.Printf("%v %+v\n", file, err)
-		return &Scenes{}, err
-	}
-
-	if err := json.Unmarshal(file_source, &unpack_json); err != nil {
-		fmt.Printf("invalid unmarshal for %+v %+v\n", file, err)
-		return &Scenes{}, err
-	}
-
-	return &unpack_json, nil
-}
-
-func find_sources(file string) ([]Source, error) {
-	scenes, err := open_json(file, Scenes{})
-
-	if err != nil {
-		return []Source{}, err
-	}
-
-	return scenes.Sources, nil
 }
 
 // Find any scenes files in the directory
 func find_in_directory(directory string) (bool, string) {
 	dir := filepath.Dir(directory + "/")
 
-	println(dir)
-
 	list, err := ioutil.ReadDir(dir)
-
-	fmt.Printf("find_in_directory %+v\n", err)
 
 	if err != nil {
 		return false, ""
 	}
 
 	for _, file := range list {
-		fmt.Printf("file in list %+v\n", dir+file.Name())
 		if file.IsDir() {
-			fmt.Printf("is a dir %+v\n", dir+file.Name())
 			continue
 		}
 
 		if strings.HasSuffix(file.Name(), ".json") {
-			fmt.Printf("Found file %+v\n", dir+file.Name())
 			return true, filepath.Join(dir, file.Name())
 		}
 	}
