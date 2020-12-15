@@ -143,27 +143,28 @@ type Font struct {
 }
 
 type Source struct {
-	Balance               float64         `json:"balance"`
-	DeinterlaceFieldOrder int             `json:"deinterlace_field_order"`
-	DeinterlaceMode       int             `json:"deinterlace_mode"`
-	Enabled               bool            `json:"enabled"`
-	Flags                 int             `json:"flags"`
-	Hotkeys               Hotkeys         `json:"hotkeys,omitempty"`
-	ID                    string          `json:"id"`
-	Mixers                int             `json:"mixers"`
-	MonitoringType        int             `json:"monitoring_type"`
-	Muted                 bool            `json:"muted"`
-	Name                  string          `json:"name"`
-	PrevVer               int             `json:"prev_ver"`
-	PrivateSettings       PrivateSettings `json:"private_settings"`
-	PushToMute            bool            `json:"push-to-mute"`
-	PushToMuteDelay       int             `json:"push-to-mute-delay"`
-	PushToTalk            bool            `json:"push-to-talk"`
-	PushToTalkDelay       int             `json:"push-to-talk-delay"`
-	Settings              Settings        `json:"settings,omitempty"`
-	Sync                  int             `json:"sync"`
-	VersionedID           string          `json:"versioned_id"`
-	Volume                float64         `json:"volume"`
+	Balance               float64                `json:"balance"`
+	DeinterlaceFieldOrder int                    `json:"deinterlace_field_order"`
+	DeinterlaceMode       int                    `json:"deinterlace_mode"`
+	Enabled               bool                   `json:"enabled"`
+	Flags                 int                    `json:"flags"`
+	Hotkeys               Hotkeys                `json:"hotkeys,omitempty"`
+	ID                    string                 `json:"id"`
+	Mixers                int                    `json:"mixers"`
+	MonitoringType        int                    `json:"monitoring_type"`
+	Muted                 bool                   `json:"muted"`
+	Name                  string                 `json:"name"`
+	PrevVer               int                    `json:"prev_ver"`
+	PrivateSettings       PrivateSettings        `json:"private_settings"`
+	PushToMute            bool                   `json:"push-to-mute"`
+	PushToMuteDelay       int                    `json:"push-to-mute-delay"`
+	PushToTalk            bool                   `json:"push-to-talk"`
+	PushToTalkDelay       int                    `json:"push-to-talk-delay"`
+	Settings              Settings               `json:"settings,omitempty"`
+	Sync                  int                    `json:"sync"`
+	VersionedID           string                 `json:"versioned_id"`
+	Volume                float64                `json:"volume"`
+	Items                 map[string]interface{} `json:"items"`
 }
 
 func HasScenes(file string) bool {
@@ -173,19 +174,25 @@ func HasScenes(file string) bool {
 		return false
 	}
 
-	return has_found
+	return len(has_found) > 0
 }
 
-func FindScenes(file string) (bool, error) {
+func FindScenes(file string) ([]Source, error) {
 	scenes, err := open_json(file, ScenesCollection{})
 
 	sources := FindSources(scenes)
 
+	var found_sources []Source
+
 	for _, source := range sources {
-		items, ok := source["items"]
+		if source.ID == "scene_source" {
+			found_sources = append(found_sources, source)
+		}
+
+		// items, ok := source["items"].(map[string]interface{})
 	}
 
-	return sources, err
+	return found_sources, err
 }
 
 // Find if there are any sounrces in a list
